@@ -1,22 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { Select, MenuItem, FormControl, InputLabel, Box, TextField } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import styles from './productList.module.css';
-import apiClient from '../../../Utility/apiClient';
+import React, { useState, useEffect } from "react";
+import { filterProduct } from "../../../Utility/filterProduct";
+
+import {
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Box,
+  TextField,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import styles from "./productList.module.css";
+import apiClient from "../../../Utility/apiClient";
 
 const ProductList = () => {
-  const [filter, setFilter] = useState('');
-  const [search, setSearch] = useState('');
-  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
-  const [sortOrder, setSortOrder] = useState('');
+  const [filter, setFilter] = useState("");
+  const [search, setSearch] = useState("");
+  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [sortOrder, setSortOrder] = useState("");
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    apiClient.get('/products')
+    const fitlerParams = filterProduct({
+      title: search,
+      categorySlug: filter,
+      price_min: priceRange.min,
+      price_max: priceRange.max,
+    });
+    apiClient
+      .get(`/products${fitlerParams}`)
       .then((response) => setProducts(response.data))
-      .catch((error) => console.error('Error fetching products:', error));
-  }, []);
+      .catch((error) => console.error("Error fetching products:", error));
+  }, [search, filter, priceRange]);
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
@@ -32,26 +48,35 @@ const ProductList = () => {
   };
 
   const handleSortChange = (event) => {
-    setSortOrder(event.target.value);
+    const order = event.target.value;
+    setSortOrder(order);
+    const sorted = [...products].sort((a, b) => {
+      if (order === "asc") {
+        return a.price - b.price;
+      } else if (order === "desc") {
+        return b.price - a.price;
+      } else {
+        return 0;
+      }
+    });
+    setProducts(sorted);
   };
 
-  const filteredProducts = products
-    .filter((product) =>
-      filter ? product.category.name === filter : true
-    )
-    .filter((product) =>
-      search ? product.title.toLowerCase().includes(search.toLowerCase()) : true
-    )
-    .filter((product) => {
-      const min = parseFloat(priceRange.min) || 0;
-      const max = parseFloat(priceRange.max) || Infinity;
-      return product.price >= min && product.price <= max;
-    })
-    .sort((a, b) => {
-      if (sortOrder === 'asc') return a.price - b.price;
-      if (sortOrder === 'desc') return b.price - a.price;
-      return 0;
-    });
+  // const filteredProducts = products
+  //   .filter((product) => (filter ? product.category.name === filter : true))
+  //   .filter((product) =>
+  //     search ? product.title.toLowerCase().includes(search.toLowerCase()) : true
+  //   )
+  //   .filter((product) => {
+  //     const min = parseFloat(priceRange.min) || 0;
+  //     const max = parseFloat(priceRange.max) || Infinity;
+  //     return product.price >= min && product.price <= max;
+  //   })
+  //   .sort((a, b) => {
+  //     if (sortOrder === "asc") return a.price - b.price;
+  //     if (sortOrder === "desc") return b.price - a.price;
+  //     return 0;
+  //   });
 
   return (
     <Box className="product-list-container" sx={{ padding: 2 }}>
@@ -65,8 +90,12 @@ const ProductList = () => {
             onChange={handleFilterChange}
           >
             <MenuItem value="">All</MenuItem>
-            {Array.from(new Set(products.map((product) => product.category.name))).map((category) => (
-              <MenuItem key={category} value={category}>{category}</MenuItem>
+            {Array.from(
+              new Set(products.map((product) => product.category.name))
+            ).map((category) => (
+              <MenuItem key={category} value={category}>
+                {category}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -77,7 +106,7 @@ const ProductList = () => {
           onChange={handleSearchChange}
           sx={{ marginBottom: 2 }}
         />
-        <Box sx={{ display: 'flex', gap: 2, marginBottom: 2 }}>
+        <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
           <TextField
             label="Min Price"
             name="min"
@@ -106,15 +135,26 @@ const ProductList = () => {
           </Select>
         </FormControl>
       </Box>
-      <Box className="product-list" sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
-        {filteredProducts.map((product) => (
+      <Box
+        className="product-list"
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+        }}
+      >
+        {products.map((product) => (
           <Box
             key={product.id}
             className="product-item"
-            sx={{ border: '1px solid #ccc', padding: 2, borderRadius: 1 }}
+            sx={{ border: "1px solid #ccc", padding: 2, borderRadius: 1 }}
             onClick={() => navigate(`/${product.id}`)}
           >
-            <img className={styles.productImage} src={product.images[0]} alt={product.title} />
+            <img
+              className={styles.productImage}
+              src={product.images[0]}
+              alt={product.title}
+            />
             <h4>{product.title}</h4>
             <p>${product.price}</p>
           </Box>

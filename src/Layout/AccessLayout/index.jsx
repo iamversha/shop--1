@@ -3,6 +3,7 @@ import { Box, Paper } from '@mui/material';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import bgImage from '../../assets/bg-inventory.jpg';
 
+
 const AccessLayout = () => {
   const location = useLocation();
 

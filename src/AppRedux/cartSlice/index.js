@@ -1,36 +1,36 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import { persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+
+const initialState = {
+  cartItems: [],
+  isLoading: false,
+  isError: false,
+};
 
 const cartSlice = createSlice({
-  name: 'cart',
-  initialState: [],
+  name: "cartItems",
+  initialState,
   reducers: {
-    addToCart: (state, action) => {
-      const { product, quantity } = action.payload;
-      const existingItem = state.find((item) => item.product.id === product.id);
-      if (existingItem) {
-        existingItem.quantity += quantity; // Increment quantity if the product already exists
-      } else {
-        state.push({ product, quantity }); // Add new product to the cart
-      }
+    setCartItems: (state, action) => {
+      state.cartItems = [...state.cartItems, action.payload]
     },
-    decrementQuantity: (state, action) => {
-      const existingItem = state.find((item) => item.product.id === action.payload.id);
-      if (existingItem) {
-        if (existingItem.quantity > 1) {
-          existingItem.quantity -= 1; // Decrement quantity
-        } else {
-          return state.filter((item) => item.product.id !== action.payload.id); // Remove item if quantity is 1
-        }
-      }
+    removeCartItem: (state, action) => {
+      const itemId = action.payload;
+      state.cartItems = state.cartItems.filter((item) => item.id !== itemId);
     },
-    removeFromCart: (state, action) => {
-      return state.filter((item) => item.product.id !== action.payload.id); // Completely remove item
-    },
-    clearCart: () => {
-      return [];
+    
+    clearCart: (state) => {
+      state.cartItems = [];
     },
   },
 });
 
-export const { addToCart, decrementQuantity, removeFromCart, clearCart } = cartSlice.actions;
-export default cartSlice.reducer;
+const persistConfig = {
+  key: "cartItems",
+  storage,
+};
+
+const persistedUserReducer = persistReducer(persistConfig, cartSlice.reducer);
+export const { setCartItems, removeCartItem, clearCart } = cartSlice.actions;
+export default persistedUserReducer;

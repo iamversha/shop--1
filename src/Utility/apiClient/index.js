@@ -2,8 +2,6 @@ import axios from 'axios';
 import { API_BASE_URL } from '../constant';
 import { updateTokens, logout } from '../../AppRedux/userSlice';
 
-// Define a type for the token refresh response
-
 // Create an Axios instance
 const api = axios.create({
   baseURL: API_BASE_URL, // Replace with your API base URL
@@ -66,14 +64,14 @@ api.interceptors.response.use(
 
 // CRUD utility functions
 const apiClient = {
-  get: (url , config ) => api.get(url, config),
-  post: (url , data, config ) => api.post(url, data, config),
-  put: (url , data, config ) => api.put(url, data, config),
-  delete: (url , config ) => api.delete(url, config),
+  get: (url, config) => api.get(url, config),
+  post: (url, data, config) => api.post(url, data, config),
+  put: (url, data, config) => api.put(url, data, config),
+  delete: (url, config) => api.delete(url, config),
 };
 
 // File upload utility
-export const uploadFile = (url, file, config, { header}) => {
+export const uploadFile = (url, file, config) => {
   const formData = new FormData();
   formData.append('file', file);
   return api.post(url, formData, {

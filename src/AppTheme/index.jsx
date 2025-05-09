@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
+import { RootState } from '../AppRedux/store';
 
-const AppTheme = ({ children }) => {
+const AppTheme= ({ children }) => {
   const prefersDarkMode = useSelector((state) => state.app.prefersDarkMode);
 
   const theme = useMemo(() =>

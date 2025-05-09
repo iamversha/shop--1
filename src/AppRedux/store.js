@@ -3,13 +3,13 @@ import { persistStore } from 'redux-persist';
 import { setStore } from '../Utility/apiClient';
 import persistedReducer from './appSlice';
 import userReducer from './userSlice';
-import cartReducer from './cartSlice'; // Import the cart slice
+import cartReducer from './cartSlice'
 
 const store = configureStore({
   reducer: {
     app: persistedReducer,
-    user: userReducer,
-    cart: cartReducer, // Add the cart slice here
+    user: userReducer, // Added user slice
+    cartItems: cartReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -21,4 +21,5 @@ const store = configureStore({
 setStore(store);
 
 export const persistor = persistStore(store);
+
 export default store;

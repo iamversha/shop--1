@@ -6,13 +6,13 @@ import apiClient from '../../Utility/apiClient';
 export const userLogin = createAsyncThunk('user/login', async (credentials, { rejectWithValue }) => {
     try {
       const authResponse = await apiClient.post(`auth/login`, credentials);
-      const tokens = authResponse.data;
+      const tokens = authResponse.data ;
       const profileResponse = await apiClient.get(`auth/profile`, {
         headers: {
           Authorization: `Bearer ${tokens.access_token}`,
         },
       });
-      const profile = profileResponse.data;
+      const profile = profileResponse.data ;
 
       return {...tokens, profile};
     } catch (error) {

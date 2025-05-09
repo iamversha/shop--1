@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { userLogin } from '../../AppRedux/userSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-// import { AppDispatch } from '../../AppRedux/store';
 
 
 const Login = () => {
+  const navigate = useNavigate();
+  const userProfile = useSelector((state)=>state.user.profile);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch= useDispatch();
 
   const handleLogin = (event) => {
     event.preventDefault();
-    console.log('Logging in with:', { email, password });
     dispatch(userLogin({ email, password }));
-    navigate("/")
+    if(userProfile === null){
+      navigate('/login')
+    }else{
+      navigate('/')
+    }
   };
 
   return (

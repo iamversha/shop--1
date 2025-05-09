@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
 
 
-const Signup= () => {
+const Signup = () => {
   return (
     <>
       <Typography variant="h4" gutterBottom>Signup Page</Typography>
