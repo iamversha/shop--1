@@ -18,6 +18,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
 import { logout } from "../../../AppRedux/userSlice";
+import ThemeToggleButton from "../../ui/ThemeToggleButton";
+import { toggleThemeMode } from "../../../AppRedux/appSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -70,7 +72,7 @@ const Navbar = () => {
   };
 
   const dispatch = useDispatch();
-
+  const themeMode = useSelector(state => state.app.themeMode)
   const cartItems = useSelector((state) => state.cartItems?.cartItems);
   const cartItemsNumber = cartItems.length;
 
@@ -79,6 +81,10 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(logout());
   };
+
+  function handleThemeChnage(value){
+    dispatch(toggleThemeMode(value))
+  }
 
   return (
     <AppBar position="static">
@@ -204,6 +210,7 @@ const Navbar = () => {
             Login
           </Button>
         )}
+        <ThemeToggleButton defaultMode={themeMode} onModeChange={handleThemeChnage} />
       </Toolbar>
     </AppBar>
   );
